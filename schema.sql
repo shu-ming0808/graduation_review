@@ -30,9 +30,9 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`student` (
   `student_id` VARCHAR(9) NOT NULL,
-  `name` VARCHAR(45) NOT NULL,
+  `student_name` VARCHAR(45) NOT NULL,
   `entry_year` VARCHAR(3) NOT NULL,
-  `type` VARCHAR(45) NOT NULL,
+  `student_type` VARCHAR(45) NOT NULL,
   `transfer_entry_level` INT NULL,
   PRIMARY KEY (`student_id`),
   INDEX `fk_student_waiver_limit_rule1_idx` (`transfer_entry_level` ASC) VISIBLE,
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`take_record` (
     FOREIGN KEY (`student_id`)
     REFERENCES `mydb`.`student` (`student_id`)
     ON DELETE CASCADE
-    ON UPDATE NO ACTION,
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_student_has_course_course1`
     FOREIGN KEY (`course_id`)
     REFERENCES `mydb`.`course` (`course_id`)
@@ -170,7 +170,6 @@ CREATE TABLE IF NOT EXISTS `mydb`.`credit_waiver` (
   `course_id` VARCHAR(9) NOT NULL,
   `original_course_name` VARCHAR(100) NOT NULL,
   `credits` INT NOT NULL,
-  `status` VARCHAR(45) NULL,
   PRIMARY KEY (`waiver_id`, `student_id`),
   INDEX `fk_credit_waiver_student1_idx` (`student_id` ASC) VISIBLE,
   INDEX `fk_credit_waiver_course1_idx` (`course_id` ASC) VISIBLE,

@@ -1,0 +1,180 @@
+USE mydb;
+
+INSERT INTO college (college_id, college_name)
+VALUES ('100', 'LA'), ('102', 'EDU'), ('200', 'SS'), ('203', 'IA'), ('300', 'BUS'), ('400', 'COMM'),
+('500', 'FL'), ('600', 'LAW'), ('700', 'SCI'), ('ZU1', 'ICI'), ('000', 'PE');
+
+INSERT INTO department (department_id, department_name, college_id)
+VALUES ('101', 'CHIN', '100'), ('102', 'EDUC', '102'), ('103', 'HIST', '100'), ('104', 'PHIL', '100'),
+('202', 'POLS', '200'), ('203', 'DIPL', '203'), ('204', 'SOCI', '200'), ('205', 'PF', '200'),
+('206', 'PA', '200'), ('207', 'LAND', '200'), ('208', 'ECON', '200'), ('209', 'ETHN', '200'),
+('301', 'IB', '300'), ('302', 'FIN', '300'), ('303', 'ACCT', '300'), ('304', 'STAT', '300'),
+('305', 'BA', '300'), ('306', 'MIS', '300'), ('307', 'FM', '300'), ('308', 'RMI', '300'),
+('401', 'JOUR', '400'), ('402', 'ADV', '400'), ('403', 'RTF', '400'), ('405', 'COMM', '400'),
+('501', 'ENG', '500'), ('502', 'ARAB', '500'), ('504', 'SLAV', '500'), ('506', 'JPN', '500'),
+('507', 'KOR', '500'), ('508', 'TUR', '500'), ('509', 'EURO', '500'), ('510', 'SEAL', '500'),
+('601', 'LAW', '600'), ('701', 'MATH', '700'), ('702', 'PSYC', '700'), ('703', 'CS', '700'),
+('ZU1', 'ICI', 'ZU1'), ('000', 'PE', '000');
+
+INSERT INTO graduation_rule (rule_id, entry_year, total_credits_min, total_ge_credits)
+VALUES (1, '111', 128, 28), (2, '113', 128, 28);
+
+INSERT INTO category (category_id, category_name)
+VALUES ('c_req', 'College Required'), ('d_req', 'Dept Required'),
+('c_c_e', 'College Core Elective'), ('d_c_e', 'Dept Core Elective'),
+('ge_hum', 'Humanities General Education'), ('ge_soc', 'Social Sciences General Education'),
+('ge_nat', 'Natural Sciences General Education'), ('ge_it', 'Information Technology General Education'),
+('ge_rc', 'Residential College General Education'), ('ge_ch', 'Chinese General Education'),
+('ge_fl', 'Foreign Language General Education'), ('elec', 'Elective'), ('pe', 'Physical Education');
+
+INSERT INTO waiver_limit_rule (transfer_entry_level, transfer_grade, max_waiver_credits)
+VALUES (1, 'G1S2', 20), (2, 'G2', 40), (3, 'G3', 80);
+
+INSERT INTO course (course_id, course_name, credits, department_id, category_id, is_core_ge)
+VALUES ('000713032', 'Calculus', 6, '701', 'c_req', 0),
+('000219572', 'Economics', 6, '301', 'c_req', 0),
+('000359011', 'Statistics I', 3, '304', 'c_req', 0),
+('000360011', 'Statistics II', 3, '304', 'c_req', 0),
+('000314141', 'Principles of Accounting I', 3, '303', 'c_req', 0),
+('000361021', 'Social Responsibility and Ethics', 1, '305', 'c_req', 0),
+
+('304004002', 'Linear Algebra', 6, '304', 'd_req', 0),
+('304030001', 'Programming and Statistical Software', 3, '304', 'd_req', 0),
+('304025001', 'Probability Theory', 3, '304', 'd_req', 0),
+('304008001', 'Regression Analysis I', 3, '304', 'd_req', 0),
+('304026001', 'Mathematical Statistics I', 3, '304', 'd_req', 0),
+('304029001', 'Mathematical Statistics II', 3, '304', 'd_req', 0),
+
+('000348041', 'Management', 3, '305', 'c_c_e', 0),
+('305009001', 'Human Resource Management', 3, '305', 'c_c_e', 0),
+('000350011', 'Marketing Management', 3, '305', 'c_c_e', 0),
+('300922001', 'Risk Management', 3, '305', 'c_c_e', 0),
+('000347001', 'Financial Management', 3, '302', 'c_c_e', 0),
+('301050001', 'Business Analytics', 3, '301', 'c_c_e', 0),
+('305023001', 'Information Management', 3, '305', 'c_c_e', 0),
+('070244001', 'Operations and Supply Chain Management', 3, '305', 'c_c_e', 0),
+
+('304021011', 'Survey Sampling', 3, '304', 'd_c_e', 0),
+('304022011', 'Analysis of Variance and Experimental Design', 3, '304', 'd_c_e', 0),
+('304023011', 'Multivariate Analysis', 3, '304', 'd_c_e', 0),
+('304028011', 'Time Series Analysis', 3, '304', 'd_c_e', 0),
+
+('041195001', 'Art and Contemporary Society', 3, '405', 'ge_hum', 1),
+('041135001', 'Western Literary Classics and Humanistic Thinking', 3, '501', 'ge_hum', 1),
+('041123001', 'Exploration of Life and Religious Culture', 3, '204', 'ge_hum', 1),
+('041099041', 'Civilization Development and Historical Thinking', 3, '103', 'ge_hum', 1),
+('041177001', 'Humanities and Science of Language', 3, '101', 'ge_hum', 1),
+('041133011', 'Modern Taiwanese History and Historical Figures', 3, '103', 'ge_hum', 1),
+('041501001', 'History of Western Art', 2, '103', 'ge_hum', 0),
+('041502001', 'Introduction to Philosophy', 2, '104', 'ge_hum', 0),
+('041503001', 'Classical Chinese Literature Appreciation', 2, '101', 'ge_hum', 0),
+('041504001', 'World Civilizations and Cultures', 2, '103', 'ge_hum', 0),
+('041505001', 'Ethics and Modern Life', 2, '104', 'ge_hum', 0),
+
+('042112091', 'Taiwanese Politics', 3, '202', 'ge_soc', 1),
+('042137001', 'Legal Literacy', 3, '601', 'ge_soc', 1),
+('042139021', 'Introduction to Intellectual Property Rights', 3, '703', 'ge_soc', 1),
+('042116011', 'Economics in Everyday Life', 3, '205', 'ge_soc', 1),
+('042133001', 'Thinking Sociologically', 3, '204', 'ge_soc', 1),
+('042181001', 'Educational Exploration and Self-Directed Learning', 3, '102', 'ge_soc', 1),
+('042142001', 'Global Perspectives and International Challenges', 3, '203', 'ge_soc', 1),
+('042156001', 'Introduction to Mainland China', 3, '510', 'ge_soc', 1),
+('042501001', 'Modern Political Systems', 2, '202', 'ge_soc', 0),
+('042502001', 'Introduction to Sociology', 2, '204', 'ge_soc', 0),
+('042503001', 'Basic Economic Principles', 2, '208', 'ge_soc', 0),
+('042504001', 'Social Welfare and Justice', 2, '205', 'ge_soc', 0),
+('042505001', 'Democracy and Citizenship', 2, '202', 'ge_soc', 0),
+('042506001', 'Urban Society and Culture', 2, '204', 'ge_soc', 0),
+
+('043030001', 'Mathematics, Logic, and Life', 3, '701', 'ge_nat', 1),
+('043010001', 'Rhythm in Everyday Life', 3, '701', 'ge_nat', 1),
+('043024001', 'History of Physics and Human Civilization', 3, '701', 'ge_nat', 1),
+('043016001', 'Life Sciences in Everyday Life', 3, '701', 'ge_nat', 1),
+('043031001', 'Psychology and Daily Life', 3, '702', 'ge_nat', 1),
+('043025001', 'The Brain and Me', 3, '701', 'ge_nat', 1),
+('043027001', 'Technology, Humanities, and Society', 3, '703', 'ge_nat', 1),
+('043501001', 'Mathematics and Human Civilization', 2, '701', 'ge_nat', 0),
+('043502001', 'Introduction to Brain Science', 2, '702', 'ge_nat', 0),
+('043503001', 'Basic Computer Science and Logic', 2, '703', 'ge_nat', 0),
+('043504001', 'Exploring Statistics in Daily Life', 2, '701', 'ge_nat', 0),
+('043505001', 'Artificial Intelligence and Society', 2, '703', 'ge_nat', 0),
+
+('046008001', 'Design Thinking and Software Project Management', 3, '703', 'ge_it', 0),
+
+('045025001', 'Animal Rights: Theory and Practice', 1, '509', 'ge_rc', 0),
+
+('031004011', 'Selected Readings in Classical Chinese Poetry', 3, '101', 'ge_ch', 0),
+('031001001', 'University Chinese: Literary Classics', 3, '101', 'ge_ch', 0),
+('031005001', 'Modern Prose and Creative Writing', 3, '101', 'ge_ch', 0),
+
+('032001021', 'College English I', 3, '501', 'ge_fl', 0),
+('032002021', 'College English II', 3, '501', 'ge_fl', 0),
+('032003001', 'College English I', 3, '501', 'ge_fl', 0),
+('032004001', 'College English II', 3, '501', 'ge_fl', 0),
+
+('000357011', 'Multimedia and Programming Applications', 3, '308', 'elec', 0),
+('000302001', 'Intermediate Microeconomics', 3, '208', 'elec', 0),
+('000305001', 'Game Theory', 3, '208', 'elec', 0),
+('305011001', 'Consumer Behavior', 3, '305', 'elec', 0),
+('301044001', 'Financial Statements Analysis', 3, '302', 'elec', 0),
+('301001001', 'International Business Management', 3, '301', 'elec', 0),
+('302001001', 'Investment Analysis', 3, '302', 'elec', 0),
+('302002001', 'Futures and Options', 3, '302', 'elec', 0),
+('305001001', 'Organizational Behavior', 3, '305', 'elec', 0),
+('305002001', 'Leadership and Teamwork', 3, '305', 'elec', 0),
+('306001001', 'E-Commerce', 3, '306', 'elec', 0),
+('308001001', 'Introduction to Insurance', 3, '308', 'elec', 0),
+('703001001', 'Data Structures', 3, '703', 'elec', 0),
+('703002001', 'Web Application Development', 3, '703', 'elec', 0),
+('702001001', 'Social Psychology', 3, '702', 'elec', 0),
+('208001001', 'Microeconomics II', 3, '208', 'elec', 0),
+('208002001', 'Macroeconomics II', 3, '208', 'elec', 0),
+('202001001', 'Political Theory', 3, '202', 'elec', 0),
+('204001001', 'Sociological Theory', 3, '204', 'elec', 0),
+('101001001', 'Contemporary Chinese Literature', 3, '101', 'elec', 0),
+('103001001', 'Modern Chinese History', 3, '103', 'elec', 0),
+('104001001', 'Introduction to Logic', 3, '104', 'elec', 0),
+('501001001', 'English Professional Writing', 3, '501', 'elec', 0),
+('506001001', 'Beginner Japanese Conversation', 3, '506', 'elec', 0),
+('509001001', 'European Cultural Studies', 3, '509', 'elec', 0),
+('401001001', 'News Reporting and Writing', 3, '401', 'elec', 0),
+('405001001', 'Digital Communication', 3, '405', 'elec', 0),
+('601001001', 'Introduction to Civil Law', 3, '601', 'elec', 0),
+('ZU1001001', 'Global Issues and Sustainable Development', 3, 'ZU1', 'elec', 0),
+('102001001', 'Educational Psychology', 3, '102', 'elec', 0),
+
+('002062041', 'Beginner Badminton', 2, '000', 'pe', 0),
+('002115001', 'Intermediate Badminton', 2, '000', 'pe', 0),
+('002303041', 'Beginner Table Tennis', 2, '000', 'pe', 0),
+('002368011', 'Orienteering', 2, '000', 'pe', 0),
+('002122001', 'Beginner Swimming', 2, '000', 'pe', 0),
+('002133001', 'Beginner Tennis', 2, '000', 'pe', 0),
+('002144001', 'Fitness and Weight Training', 2, '000', 'pe', 0),
+('002155001', 'Yoga and Mindfulness', 2, '000', 'pe', 0);
+
+INSERT INTO rule_condition (condition_id, rule_id, category_id, min_credits, max_credits, min_courses, restrict_dept_id, restrict_college_id)
+VALUES (1, 1, 'c_req', 22, NULL, NULL, NULL, '300'),
+(2, 1, 'd_req', 20, NULL, NULL, '304', NULL),
+(3, 1, 'c_c_e', 3, NULL, 1, NULL, '300'),
+(4, 1, 'd_c_e', 6, NULL, 2, '304', NULL),
+(5, 1, 'ge_hum', 3, 7, NULL, NULL, NULL),
+(6, 1, 'ge_soc', 3, 7, NULL, NULL, NULL),
+(7, 1, 'ge_nat', 3, 7, NULL, NULL, NULL),
+(8, 1, 'ge_it', 0, 3, NULL, NULL, NULL),
+(9, 1, 'ge_rc', 0, 3, NULL, NULL, NULL),
+(10, 1, 'ge_ch', 3, 6, NULL, NULL, NULL),
+(11, 1, 'ge_fl', 6, 6, NULL, NULL, NULL),
+(12, 1, 'pe', NULL, NULL, 4, NULL, NULL),
+
+(13, 2, 'c_req', 22, NULL, NULL, NULL, '300'),
+(14, 2, 'd_req', 21, NULL, NULL, '304', NULL),
+(15, 2, 'c_c_e', 3, NULL, 1, NULL, '300'),
+(16, 2, 'd_c_e', 9, NULL, 3, '304', NULL),
+(17, 2, 'ge_hum', 3, 7, NULL, NULL, NULL),
+(18, 2, 'ge_soc', 3, 7, NULL, NULL, NULL),
+(19, 2, 'ge_nat', 3, 7, NULL, NULL, NULL),
+(20, 2, 'ge_it', 0, 3, NULL, NULL, NULL),
+(21, 2, 'ge_rc', 0, 3, NULL, NULL, NULL),
+(22, 2, 'ge_ch', 3, 6, NULL, NULL, NULL),
+(23, 2, 'ge_fl', 6, 6, NULL, NULL, NULL),
+(24, 2, 'pe', NULL, NULL, 4, NULL, NULL);

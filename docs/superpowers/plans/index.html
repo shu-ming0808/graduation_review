@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>&#49;&#49;&#49;&#45;&#49;&#49;&#51;&#23416;&#24180;&#24230;&#20837;&#23416;&#20043;&#32113;&#35336;&#31995;&#23416;&#22763;&#29677;&#30050;&#26989;&#27298;&#26680;&#31995;&#32113;</title>
+  <style>
+    :root {
+      --blue: #153f98;
+      --blue-dark: #0d2e72;
+      --title-size: clamp(30px, 4.4vw, 38px);
+      --ink: #111827;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --panel: #f1f1f1;
+      --paper: #ffffff;
+      --danger: #c62828;
+      --ok: #1f7a3d;
+      --warning: #d8a100;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 1px 1px, rgba(21, 63, 152, 0.08) 1px, transparent 0) 0 0 / 18px 18px,
+        linear-gradient(135deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0) 42%),
+        #ECF5FF;
+      color: var(--ink);
+      font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", Arial, sans-serif;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .page {
+      width: min(980px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 0 0 56px;
+    }
+
+    .hero {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      min-height: 380px;
+      padding-top: 0;
+    }
+
+    .brand-logo {
+      position: absolute;
+      top: clamp(28px, 3vw, 37px);
+      left: 0;
+      width: 92px;
+      height: 92px;
+      object-fit: contain;
+    }
+
+    .hero-main {
+      width: min(700px, 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 40px;
+    }
+
+    h1 {
+      width: 100%;
+      margin: 0 0 46px;
+      color: var(--blue);
+      font-size: var(--title-size);
+      line-height: 1.12;
+      text-align: center;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-shadow: 1px 1px 0 rgba(21, 63, 152, 0.22);
+    }
+
+    .upload-panel {
+      width: min(610px, 100%);
+      min-height: 198px;
+      display: grid;
+      place-items: center;
+      border: 0;
+      background: var(--panel);
+      color: #9ca3af;
+      cursor: pointer;
+      transition: background 0.18s ease, outline 0.18s ease;
+    }
+
+    .upload-panel:hover,
+    .upload-panel.dragover {
+      background: #e6edf9;
+      outline: 2px solid rgba(21, 63, 152, 0.25);
+      outline-offset: -2px;
+      color: var(--blue-dark);
+    }
+
+    .upload-panel input {
+      display: none;
+    }
+
+    .upload-copy {
+      display: grid;
+      gap: 8px;
+      text-align: center;
+      color: inherit;
+      pointer-events: none;
+    }
+
+    .upload-copy strong {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .upload-copy span {
+      color: inherit;
+      font-size: 14px;
+    }
+
+    .instructions,
+    .check-result {
+      width: min(610px, 100%);
+      margin-right: auto;
+      margin-left: auto;
+      text-align: center;
+    }
+
+    .instructions {
+      margin-top: 20px;
+      margin-bottom: 28px;
+    }
+
+    .instructions h2,
+    .check-result h2 {
+      margin: 0 0 14px;
+      font-size: 22px;
+      font-weight: 500;
+    }
+
+    .instructions ol {
+      display: inline-grid;
+      gap: 9px;
+      margin: 0;
+      padding-left: 0;
+      list-style-position: inside;
+      text-align: center;
+      font-size: 16px;
+      line-height: 1.32;
+    }
+
+    .instructions .linkish {
+      color: #1683ff;
+      text-decoration: none;
+      font-style: normal;
+    }
+
+    .instructions a.linkish {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .check-result {
+      min-height: 118px;
+      display: grid;
+      align-content: center;
+      margin-bottom: 34px;
+      padding: 20px 24px;
+      border: 1px solid rgba(21, 63, 152, 0.14);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.66);
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.05);
+    }
+
+    .check-result p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .check-result.has-result {
+      text-align: left;
+      align-content: start;
+    }
+
+    .check-result.has-result h2 {
+      color: var(--blue-dark);
+      text-align: center;
+    }
+
+    .workspace {
+      display: none;
+      gap: 18px;
+      margin-top: 28px;
+    }
+
+    .workspace.is-visible {
+      display: grid;
+    }
+
+    .student-card,
+    .semester-card {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      border-radius: 8px;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+      overflow: hidden;
+    }
+
+    .student-card {
+      padding: 20px 22px;
+    }
+
+    .student-card h2 {
+      margin: 0 0 16px;
+      color: var(--blue-dark);
+      font-size: 20px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px 22px;
+    }
+
+    .info-item {
+      display: grid;
+      gap: 3px;
+      min-width: 0;
+      font-size: 15px;
+    }
+
+    .info-item .label {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .cards-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 18px;
+    }
+
+    .card-header {
+      padding: 12px 16px;
+      background: var(--blue);
+      color: #fff;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      padding: 9px 12px;
+      border-bottom: 1px solid #eef0f3;
+      vertical-align: top;
+    }
+
+    th {
+      color: #374151;
+      background: #f8fafc;
+      text-align: left;
+      font-weight: 700;
+    }
+
+    td:nth-child(2),
+    td:nth-child(3),
+    th:nth-child(2),
+    th:nth-child(3) {
+      width: 70px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .card-footer {
+      padding: 10px 16px;
+      border-top: 1px solid var(--line);
+      background: #f8fafc;
+      color: #374151;
+      text-align: right;
+      font-size: 14px;
+    }
+
+    .score-fail {
+      color: var(--danger);
+      font-weight: 700;
+    }
+
+    .score-pending {
+      color: var(--muted);
+    }
+
+    .score-stopped {
+      color: var(--warning);
+      font-weight: 700;
+    }
+
+    .score-pass {
+      color: var(--ok);
+      font-weight: 600;
+    }
+
+    .notice {
+      display: none;
+      margin: 12px auto 0;
+      color: var(--danger);
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .notice.is-visible {
+      display: block;
+    }
+
+    @media (max-width: 520px) {
+      .page {
+        width: min(100% - 24px, 520px);
+      }
+
+      .hero {
+        flex-direction: column;
+        align-items: center;
+        min-height: auto;
+        padding-top: 14px;
+      }
+
+      .brand-logo {
+        position: static;
+        width: 78px;
+        height: 78px;
+        margin: 0 auto;
+      }
+
+      .hero-main {
+        padding-top: 0;
+      }
+
+      h1 {
+        margin-bottom: 28px;
+        font-size: 30px;
+      }
+
+      .upload-panel {
+        min-height: 170px;
+      }
+
+      .instructions {
+        margin-top: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero" aria-labelledby="pageTitle">
+      <img class="brand-logo" src="下載.png" alt="&#22283;&#31435;&#25919;&#27835;&#22823;&#23416;&#32113;&#35336;&#23416;&#31995;&#27161;&#35468;">
+      <div class="hero-main">
+        <h1 id="pageTitle">&#49;&#49;&#49;&#45;&#49;&#49;&#51;&#23416;&#24180;&#24230;&#20837;&#23416;&#20043;&#32113;&#35336;&#31995;&#23416;&#22763;&#29677;<br>&#30050;&#26989;&#27298;&#26680;&#31995;&#32113;</h1>
+        <label class="upload-panel" id="uploadArea" for="fileInput" aria-label="&#19978;&#20659;&#32;&#74;&#83;&#79;&#78;&#32;&#27284;&#26696;">
+          <span class="upload-copy">
+            <strong>&#25302;&#26355;&#32;&#74;&#83;&#79;&#78;&#32;&#27284;&#26696;&#21040;&#27492;&#34389;</strong>
+            <span>&#25110;&#40670;&#19968;&#19979;&#36984;&#25799;&#32;&#101;&#120;&#112;&#111;&#114;&#116;&#83;&#116;&#117;&#100;&#101;&#110;&#116;&#68;&#97;&#116;&#97;&#46;&#106;&#115;&#111;&#110;</span>
+          </span>
+          <input type="file" id="fileInput" accept=".json,application/json">
+        </label>
+        <p class="notice" id="notice" role="alert"></p>
+      </div>
+    </section>
+
+    <section class="instructions" aria-label="&#20351;&#29992;&#35498;&#26126;">
+      <h2>&#20351;&#29992;&#35498;&#26126;</h2>
+      <ol>
+        <li>&#35531;&#30331;&#20837; <a class="linkish" href="https://i.nccu.edu.tw/Login.aspx" target="_blank" rel="noopener noreferrer">INCCU</a></li>
+        <li>&#36914;&#20837;<span class="linkish">&#25105;&#30340;&#20840;&#20154;&#31995;&#32113;</span></li>
+        <li>&#40670;&#36984;&#32178;&#38913;&#26368;&#19979;&#26041;&#30340;<span class="linkish">&#36039;&#26009;&#26684;&#24335;&#21270;&#21295;&#20986;</span></li>
+        <li>&#21246;&#36984;<span class="linkish">&#35506;&#26989;&#23416;&#32722;</span>&#30340;&#39006;&#21029;</li>
+        <li>&#25353;&#19979;<span class="linkish">&#19979;&#36617;</span></li>
+        <li>&#40670;&#36984;&#19978;&#20659;&#33267;&#27492;&#26041;&#26694;</li>
+      </ol>
+    </section>
+
+    <section class="workspace" id="workspace" aria-live="polite">
+      <article class="student-card">
+        <h2>&#23416;&#29983;&#36039;&#26009;</h2>
+        <div class="info-grid" id="infoGrid"></div>
+      </article>
+      <section class="check-result" id="checkResult" aria-live="polite">
+        <h2>&#27298;&#26680;&#32080;&#26524;</h2>
+        <p id="checkResultBody">&#23578;&#26410;&#21462;&#24471;&#24460;&#31471;&#27298;&#26680;&#32080;&#26524;&#65292;&#27492;&#21312;&#22495;&#38928;&#30041;&#32102;&#24460;&#31471;&#22238;&#20659;&#36039;&#26009;&#39023;&#31034;&#12290;</p>
+      </section>
+      <div class="cards-container" id="cardsContainer"></div>
+    </section>
+  </main>
+
+  <script>
+    const text = {
+      jsonParseError: '\u004a\u0053\u004f\u004e \u89e3\u6790\u5931\u6557\uff1a',
+      missingStudent: '\u627e\u4e0d\u5230\u5b78\u751f\u8cc7\u6599\uff0c\u8acb\u78ba\u8a8d\u4e0a\u50b3\u7684\u662f\u5168\u4eba\u7cfb\u7d71\u532f\u51fa\u7684 \u004a\u0053\u004f\u004e\u3002',
+      labels: ['\u4e2d\u6587\u59d3\u540d', '\u82f1\u6587\u59d3\u540d', '\u5b78\u865f', '\u7cfb\u7d1a', '\u4e3b\u4fee', '\u5b78\u751f\u8eab\u5206', '\u5df2\u4fee\u7e3d\u5b78\u5206'],
+      empty: '\u2014',
+      unnamedCourse: '\u672a\u547d\u540d\u8ab2\u7a0b',
+      academicYearPrefix: ' \u5b78\u5e74\u5ea6\u7b2c ',
+      semesterSuffix: ' \u5b78\u671f',
+      courseName: '\u8ab2\u7a0b\u540d\u7a31',
+      credit: '\u5b78\u5206',
+      score: '\u6210\u7e3e',
+      totalPrefix: '\u672c\u5b78\u671f\u5408\u8a08 ',
+      totalSuffix: ' \u5b78\u5206',
+      noScore: '\u5c1a\u7121\u6210\u7e3e',
+      stopped: '\u505c\u4fee',
+      backendResultTitle: '\u27298\u6838\u7d50\u679c'
+    };
+
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const notice = document.getElementById('notice');
+    const workspace = document.getElementById('workspace');
+    const infoGrid = document.getElementById('infoGrid');
+    const cardsContainer = document.getElementById('cardsContainer');
+    const checkResult = document.getElementById('checkResult');
+    const checkResultBody = document.getElementById('checkResultBody');
+
+    uploadArea.addEventListener('dragover', (event) => {
+      event.preventDefault();
+      uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (event) => {
+      event.preventDefault();
+      uploadArea.classList.remove('dragover');
+      const file = event.dataTransfer.files[0];
+      if (file) handleFile(file);
+    });
+
+    fileInput.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (file) handleFile(file);
+    });
+
+    function handleFile(file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const data = JSON.parse(event.target.result);
+          render(data);
+          showNotice('');
+        } catch (error) {
+          showNotice(text.jsonParseError + error.message);
+        }
+      };
+      reader.readAsText(file, 'UTF-8');
+    }
+
+    function render(data) {
+      const student = findStudentPayload(data);
+      if (!student) {
+        showNotice(text.missingStudent);
+        return;
+      }
+
+      renderStudentInfo(student.aboutMe || {}, student.totalCredits || '');
+      renderSemesterCards(student.gradeRecordList || []);
+      workspace.classList.add('is-visible');
+      workspace.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function findStudentPayload(data) {
+      const first = Array.isArray(data) ? data[0] : data;
+      if (!first || typeof first !== 'object') return null;
+      if (first.aboutMe || first.gradeRecordList) return first;
+      return Object.values(first).find((value) => {
+        return value && typeof value === 'object' && (value.aboutMe || value.gradeRecordList);
+      }) || null;
+    }
+
+    function renderStudentInfo(about, totalCredits) {
+      const values = [
+        about.chineseName,
+        about.englishName,
+        about.studentNumber,
+        about.departmentProgramGrade,
+        about.registerMajor,
+        about.studentIdentity,
+        totalCredits
+      ];
+
+      infoGrid.innerHTML = text.labels.map((label, index) => (
+        '<div class="info-item">' +
+          '<span class="label">' + escapeHtml(label) + '</span>' +
+          '<span>' + escapeHtml(values[index] || text.empty) + '</span>' +
+        '</div>'
+      )).join('');
+    }
+
+    function renderSemesterCards(gradeRecordList) {
+      const semesters = new Map();
+
+      gradeRecordList.forEach((group) => {
+        (group.GradeRecords || []).forEach((record) => {
+          const year = record.academicYear || group.AcademicYear || '';
+          const semester = record.semester || '';
+          const key = year + '-' + semester;
+          if (!semesters.has(key)) semesters.set(key, []);
+          semesters.get(key).push(record);
+        });
+      });
+
+      cardsContainer.innerHTML = Array.from(semesters.entries())
+        .sort(([a], [b]) => semesterSortValue(a) - semesterSortValue(b))
+        .map(([key, courses]) => {
+          const [year, semester] = key.split('-');
+          const totalCredits = courses.reduce((sum, course) => sum + (parseFloat(course.credit) || 0), 0);
+          const rows = courses.map((course) => {
+            const score = getScoreDisplay(course.score);
+            return '<tr>' +
+              '<td>' + escapeHtml(course.courseName || text.unnamedCourse) + '</td>' +
+              '<td>' + escapeHtml(formatCredit(course.credit)) + '</td>' +
+              '<td class="' + score.className + '">' + escapeHtml(score.text) + '</td>' +
+            '</tr>';
+          }).join('');
+
+          return '<article class="semester-card">' +
+            '<div class="card-header">' + escapeHtml(year) + text.academicYearPrefix + escapeHtml(semester) + text.semesterSuffix + '</div>' +
+            '<table>' +
+              '<thead><tr><th>' + text.courseName + '</th><th>' + text.credit + '</th><th>' + text.score + '</th></tr></thead>' +
+              '<tbody>' + rows + '</tbody>' +
+            '</table>' +
+            '<div class="card-footer">' + text.totalPrefix + formatCredit(totalCredits) + text.totalSuffix + '</div>' +
+          '</article>';
+        }).join('');
+    }
+
+    function semesterSortValue(key) {
+      const [year, semester] = key.split('-').map((value) => parseInt(value, 10) || 0);
+      return year * 10 + semester;
+    }
+
+    function getScoreDisplay(score) {
+      if (!score) return { text: text.noScore, className: 'score-pending' };
+      const normalized = String(score).trim();
+      const numeric = parseFloat(normalized);
+
+      if (!Number.isNaN(numeric)) {
+        return {
+          text: numeric.toFixed(2),
+          className: numeric < 60 ? 'score-fail' : 'score-pass'
+        };
+      }
+
+      if (normalized.includes('\u505c\u4fee') || normalized.includes('\u505c')) {
+        return { text: normalized, className: 'score-stopped' };
+      }
+
+      if (normalized.includes('\u672a') || normalized.includes('\u5c1a') || normalized.includes('\u62b5\u514d')) {
+        return { text: normalized, className: 'score-pending' };
+      }
+
+      return { text: normalized, className: 'score-pass' };
+    }
+
+    function formatCredit(value) {
+      const number = parseFloat(value);
+      return Number.isNaN(number) ? (value || '0') : number.toString();
+    }
+
+    function renderBackendCheckResult(result) {
+      checkResult.classList.add('has-result');
+      checkResultBody.innerHTML = Array.isArray(result)
+        ? '<ul>' + result.map((item) => '<li>' + escapeHtml(item) + '</li>').join('') + '</ul>'
+        : escapeHtml(result || '');
+    }
+
+    window.renderBackendCheckResult = renderBackendCheckResult;
+
+    function showNotice(message) {
+      notice.textContent = message;
+      notice.classList.toggle('is-visible', Boolean(message));
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+  </script>
+</body>
+</html>

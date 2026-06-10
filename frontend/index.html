@@ -403,7 +403,7 @@
       </article>
       <section class="check-result" id="checkResult" aria-live="polite">
         <h2>&#27298;&#26680;&#32080;&#26524;</h2>
-        <p id="checkResultBody">&#23578;&#26410;&#21462;&#24471;&#24460;&#31471;&#27298;&#26680;&#32080;&#26524;&#65292;&#27492;&#21312;&#22495;&#38928;&#30041;&#32102;&#24460;&#31471;&#22238;&#20659;&#36039;&#26009;&#39023;&#31034;&#12290;</p>
+        <p id="checkResultBody"></p>
       </section>
       <div class="cards-container" id="cardsContainer"></div>
     </section>
@@ -530,7 +530,13 @@
         .sort(([a], [b]) => semesterSortValue(a) - semesterSortValue(b))
         .map(([key, courses]) => {
           const [year, semester] = key.split('-');
-          const totalCredits = courses.reduce((sum, course) => sum + (parseFloat(course.credit) || 0), 0);
+          const totalCredits = courses.reduce((sum, course) => {
+            const scoreInfo = getScoreDisplay(course.score);
+            if (scoreInfo.className === 'score-fail' || scoreInfo.className === 'score-stopped') {
+              return sum;
+            }
+            return sum + (parseFloat(course.credit) || 0);
+          }, 0);
           const rows = courses.map((course) => {
             const score = getScoreDisplay(course.score);
             return '<tr>' +

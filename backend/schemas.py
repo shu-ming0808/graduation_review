@@ -8,20 +8,21 @@ class Request(BaseModel):
     waiver_credits: int = 0 #抵免學分
     courses: List[Dict[str, Any]] #課業學習JSON
 
-#後端回傳的資料格式，每個陣列有兩個值，第一個為已修的學分數，第二個為要求的最低學分數
+#後端回傳的資料格式，每個陣列有四個值
+#第一個為已修的學分數，第二個為要求的最低學分數，第三個為還需學分數，第四個為是否通過
 class Response(BaseModel):
-    total:      List[int]
-    total_ge:   List[int]
-    elec:       List[int]
-    c_c_e:      List[int]
-    c_req:      List[int]
-    d_c_e:      List[int]
-    d_req:      List[int]
-    ge_ch:      List[int]
-    ge_fl:      List[int]
-    ge_hum:     List[int]
-    ge_it:      List[int]
-    ge_nat:     List[int]
-    ge_rc:      List[int]
-    ge_soc:     List[int]
-    pe:         List[int]
+    total:      tuple[int, int, int, bool]
+    total_ge:   tuple[int, int, int, bool]
+    elec:       tuple[int, int, int, bool]
+    c_c_e:      tuple[int, int, int, bool]
+    c_req:      tuple[int, int, int, bool]
+    d_c_e:      tuple[int, int, int, bool]
+    d_req:      tuple[int, int, int, bool]
+    ge_ch:      tuple[int, int, int, bool]
+    ge_fl:      tuple[int, int, int, bool]
+    ge_hum:     tuple[int, int, int, bool]
+    ge_it:      tuple[int, int, int, bool]
+    ge_nat:     tuple[int, int, int, bool]
+    ge_rc:      tuple[int, int, int, bool]
+    ge_soc:     tuple[int, int, int, bool]
+    pe:         tuple[int, int, int, bool]

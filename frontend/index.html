@@ -70,9 +70,53 @@
       padding-top: 40px;
     }
 
+    /* 設定區塊樣式 */
+    .config-section {
+      width: min(610px, 100%);
+      background: var(--paper);
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 15px;
+      border: 1px solid var(--line);
+    }
+
+    .config-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .config-group label {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--blue-dark);
+    }
+
+    .config-group select, 
+    .config-group input {
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .config-group select:focus, 
+    .config-group input:focus {
+      border-color: var(--blue);
+    }
+
+    .hidden {
+      display: none;
+    }
+
     h1 {
       width: 100%;
-      margin: 0 0 46px;
+      margin: 0 0 36px;
       color: var(--blue);
       font-size: var(--title-size);
       line-height: 1.12;
@@ -373,6 +417,39 @@
       <img class="brand-logo" src="下載.png" alt="&#22283;&#31435;&#25919;&#27835;&#22823;&#23416;&#32113;&#35336;&#23416;&#31995;&#27161;&#35468;">
       <div class="hero-main">
         <h1 id="pageTitle">&#49;&#49;&#49;&#45;&#49;&#49;&#51;&#23416;&#24180;&#24230;&#20837;&#23416;&#20043;&#32113;&#35336;&#31995;&#23416;&#22763;&#29677;<br>&#30050;&#26989;&#27298;&#26680;&#31995;&#32113;</h1>
+        
+        <!-- 設定區塊 -->
+        <div class="config-section">
+          <div class="config-group">
+            <label for="entryYear">入學年度</label>
+            <select id="entryYear">
+              <option value="111">111學年度</option>
+              <option value="112">112學年度</option>
+              <option value="113">113學年度</option>
+            </select>
+          </div>
+          <div class="config-group">
+            <label for="isTransfer">是否為轉學生</label>
+            <select id="isTransfer">
+              <option value="no">否</option>
+              <option value="yes">是</option>
+            </select>
+          </div>
+          <div id="transferGradeGroup" class="config-group hidden">
+            <label for="transferGrade">轉入年級</label>
+            <select id="transferGrade">
+              <option value="1">一年級下學期</option>
+              <option value="2">二年級</option>
+              <option value="3">三年級</option>
+            </select>
+          </div>
+          <div class="config-group">
+            <label for="waiverCredits">抵免學分數</label>
+            <input type="number" id="waiverCredits" value="0" min="0">
+            <span id="waiverWarning" style="color: var(--danger); font-size: 12px; margin-top: 4px; display: none;"></span>
+          </div>
+        </div>
+
         <label class="upload-panel" id="uploadArea" for="fileInput" aria-label="&#19978;&#20659;&#32;&#74;&#83;&#79;&#78;&#32;&#27284;&#26696;">
           <span class="upload-copy">
             <strong>&#25302;&#26355;&#32;&#74;&#83;&#79;&#78;&#32;&#27284;&#26696;&#21040;&#27492;&#34389;</strong>
@@ -437,6 +514,56 @@
     const checkResult = document.getElementById('checkResult');
     const checkResultBody = document.getElementById('checkResultBody');
 
+    // 選單控制邏輯初始化
+    const entryYearInput = document.getElementById('entryYear');
+    const isTransferInput = document.getElementById('isTransfer');
+    const transferGradeGroup = document.getElementById('transferGradeGroup');
+    const transferGradeInput = document.getElementById('transferGrade');
+    const waiverCreditsInput = document.getElementById('waiverCredits');
+    const waiverWarning = document.getElementById('waiverWarning');
+
+    function validateWaiver() {
+      if (isTransferInput.value !== 'yes') {
+        waiverWarning.style.display = 'none';
+        return;
+      }
+
+      const grade = parseInt(transferGradeInput.value, 10);
+      const credits = parseInt(waiverCreditsInput.value, 10) || 0;
+      let limit = 0;
+      let message = '';
+
+      if (grade === 1) {
+        limit = 20;
+        message = '一年級下學期抵免上限為 20 學分';
+      } else if (grade === 2) {
+        limit = 40;
+        message = '二年級抵免上限為 40 學分';
+      } else if (grade === 3) {
+        limit = 80;
+        message = '三年級抵免上限為 80 學分';
+      }
+
+      if (credits > limit) {
+        waiverWarning.textContent = '⚠️ ' + message;
+        waiverWarning.style.display = 'block';
+      } else {
+        waiverWarning.style.display = 'none';
+      }
+    }
+
+    isTransferInput.addEventListener('change', () => {
+      if (isTransferInput.value === 'yes') {
+        transferGradeGroup.classList.remove('hidden');
+      } else {
+        transferGradeGroup.classList.add('hidden');
+      }
+      validateWaiver();
+    });
+
+    transferGradeInput.addEventListener('change', validateWaiver);
+    waiverCreditsInput.addEventListener('input', validateWaiver);
+
     uploadArea.addEventListener('dragover', (event) => {
       event.preventDefault();
       uploadArea.classList.add('dragover');
@@ -460,16 +587,53 @@
 
     function handleFile(file) {
       const reader = new FileReader();
-      reader.onload = (event) => {
+      reader.onload = async (event) => {
         try {
           const data = JSON.parse(event.target.result);
           render(data);
           showNotice('');
+          
+          const student = findStudentPayload(data);
+          if (student) {
+            await sendToBackend(student);
+          }
         } catch (error) {
           showNotice(text.jsonParseError + error.message);
         }
       };
       reader.readAsText(file, 'UTF-8');
+    }
+
+    async function sendToBackend(studentData) {
+      try {
+        renderBackendCheckResult('正在連線後端進行檢核...');
+        
+        const isTransfer = isTransferInput.value === 'yes';
+        const payload = {
+          entry_year: entryYearInput.value,
+          transfer_grade: isTransfer ? parseInt(transferGradeInput.value, 10) : 0,
+          waiver_credits: parseInt(waiverCreditsInput.value, 10) || 0,
+          courses: [{ "課業學習": studentData }]
+        };
+
+        const response = await fetch('http://127.0.0.1:8000/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) throw new Error('伺服器回傳錯誤');
+        
+        const result = await response.json();
+        console.log('檢核結果:', result);
+        renderBackendCheckResult('檢核完成！請查看瀏覽器主控台 (F12) 取得詳細 JSON 結果。');
+        
+      } catch (error) {
+        console.error('API Error:', error);
+        renderBackendCheckResult('無法連線至後端伺服器 (FastAPI)，請檢查後端是否啟動並開啟 CORS。');
+      }
     }
 
     function render(data) {
@@ -611,6 +775,11 @@
         .replaceAll('>', '&gt;')
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&#039;');
+    }
+  </script>
+</body>
+</html>
+eplaceAll("'", '&#039;');
     }
   </script>
 </body>

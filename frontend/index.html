@@ -480,7 +480,7 @@
       </article>
       <section class="check-result" id="checkResult" aria-live="polite">
         <h2>&#27298;&#26680;&#32080;&#26524;</h2>
-        <p id="checkResultBody"></p>
+        <div id="checkResultBody"></div>
       </section>
       <div class="cards-container" id="cardsContainer"></div>
     </section>
@@ -624,16 +624,70 @@
           body: JSON.stringify(payload),
         });
 
-        if (!response.ok) throw new Error('伺服器回傳錯誤');
+        if (!response.ok) throw new Error('伺服器回應錯誤');
         
         const result = await response.json();
-        console.log('檢核結果:', result);
-        renderBackendCheckResult('檢核完成！請查看瀏覽器主控台 (F12) 取得詳細 JSON 結果。');
+        console.log('後端檢核結果:', result);
+        renderBackendCheckResult(result);
         
       } catch (error) {
         console.error('API Error:', error);
-        renderBackendCheckResult('無法連線至後端伺服器 (FastAPI)，請檢查後端是否啟動並開啟 CORS。');
+        renderBackendCheckResult('無法連線至後端伺服器 (FastAPI)。請確認後端已啟動並開啟 CORS。');
       }
+    }
+
+    function renderBackendCheckResult(result) {
+      checkResult.classList.add('has-result');
+
+      if (typeof result === 'string') {
+        checkResultBody.innerHTML = `<p>${escapeHtml(result)}</p>`;
+        return;
+      }
+
+      const labels = {
+        total: '畢業總學分',
+        total_ge: '通識總計',
+        c_c_e: '校訂選修',
+        c_req: '校訂必修',
+        d_c_e: '系選修',
+        d_req: '系必修',
+        ge_ch: '通識-中文',
+        ge_fl: '通識-外語',
+        ge_hum: '通識-人文',
+        ge_it: '通識-資訊',
+        ge_nat: '通識-自然',
+        ge_rc: '通識-宗教',
+        ge_soc: '通識-社會',
+        pe: '體育次數'
+      };
+
+      let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">';
+      
+      for (const [key, label] of Object.entries(labels)) {
+        if (result[key] && Array.isArray(result[key])) {
+          const current = result[key][0];
+          const required = result[key][1];
+          const isOk = current >= required;
+          const percentage = required > 0 ? Math.min((current / required) * 100, 100) : 0;
+          const color = isOk ? 'var(--ok)' : 'var(--danger)';
+
+          html += `
+            <div style="background: #fff; padding: 12px; border: 1px solid var(--line); border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-weight: 700; font-size: 14px;">${label}</span>
+                <span style="color: ${color}; font-weight: 700; font-size: 14px;">
+                  ${current} / ${required} ${isOk ? '✅' : '❌'}
+                </span>
+              </div>
+              <div style="width: 100%; height: 6px; background: #f1f1f1; border-radius: 3px; overflow: hidden;">
+                <div style="width: ${percentage}%; height: 100%; background: ${color}; transition: width 0.6s ease;"></div>
+              </div>
+            </div>`;
+        }
+      }
+      
+      html += '</div>';
+      checkResultBody.innerHTML = html;
     }
 
     function render(data) {
@@ -754,15 +808,6 @@
       return Number.isNaN(number) ? (value || '0') : number.toString();
     }
 
-    function renderBackendCheckResult(result) {
-      checkResult.classList.add('has-result');
-      checkResultBody.innerHTML = Array.isArray(result)
-        ? '<ul>' + result.map((item) => '<li>' + escapeHtml(item) + '</li>').join('') + '</ul>'
-        : escapeHtml(result || '');
-    }
-
-    window.renderBackendCheckResult = renderBackendCheckResult;
-
     function showNotice(message) {
       notice.textContent = message;
       notice.classList.toggle('is-visible', Boolean(message));
@@ -775,11 +820,6 @@
         .replaceAll('>', '&gt;')
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&#039;');
-    }
-  </script>
-</body>
-</html>
-eplaceAll("'", '&#039;');
     }
   </script>
 </body>

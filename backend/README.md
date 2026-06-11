@@ -2,7 +2,7 @@
 - 後端以 FastAPI + SQLAlchemy 建構，提供一個 POST API 來檢核學生修課資料是否符合畢業規則。
 
 檔案說明
-- `database.py`：建立 SQLAlchemy 引擎與 `SessionLocal`，並提供 `get_db()` 供依賴注入使用。預設 DB 設定在此檔案（`DB_HOST`、`DB_PORT`、`DB_USER`、`DB_PASSWORD`、`DB_NAME`）。
+- `database.py`：建立 SQLAlchemy 引擎與 `SessionLocal`，並提供 `get_db()` 供依賴注入使用。DB 設定由環境變數讀取（`DB_HOST`、`DB_PORT`、`DB_USER`、`DB_PASSWORD`、`DB_NAME`）。
 - `models.py`：使用 `automap_base()` 自動映射資料庫表成 ORM 類別（例如 `Course`、`GraduationRule`、`RuleCondition` 等）。
 - `schemas.py`：使用 Pydantic 定義輸入 (`Request`) 與輸出 (`Response`) 的資料模型，方便驗證與文件化。
 - `main.py`：FastAPI 應用程式，實作一個 `POST /` 路由，接收前端提供的修課 JSON，查資料庫並回傳各類別已修學分與需求下限。
@@ -13,7 +13,7 @@
 2. 將 schema 與資料匯入（專案根目錄有 `schema_2.sql` 與 `data_2.sql`）
 
 3. 修改資料庫連線資訊：
-- 程式預設把連線字串寫死在 `database.py`，若需變更請直接更新 `DB_HOST`、`DB_PORT`、`DB_USER`、`DB_PASSWORD`、`DB_NAME`。
+- 請複製專案根目錄的 `.env.example` 為 `.env`，再依照本機 MySQL 設定修改 `DB_HOST`、`DB_PORT`、`DB_USER`、`DB_PASSWORD`、`DB_NAME`。
 
 安裝 Python 相依套件
 

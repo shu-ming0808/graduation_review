@@ -44,6 +44,8 @@ VALUES ('000713032', 'Calculus', 6, '701', 'c_req', 0),
 ('304008001', 'Regression Analysis I', 3, '304', 'd_req', 0),
 ('304026001', 'Mathematical Statistics I', 3, '304', 'd_req', 0),
 ('304029001', 'Mathematical Statistics II', 3, '304', 'd_req', 0),
+('300933001', 'Mathematical Statistics I', 3, '304', 'd_req', 0),
+('300933002', 'Mathematical Statistics II', 3, '304', 'd_req', 0),
 
 ('000348041', 'Management', 3, '305', 'c_c_e', 0),
 ('305009001', 'Human Resource Management', 3, '305', 'c_c_e', 0),

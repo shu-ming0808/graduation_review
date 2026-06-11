@@ -616,7 +616,11 @@
           courses: [{ "課業學習": studentData }]
         };
 
-        const response = await fetch('http://127.0.0.1:8000/', {
+        // 自動偵測當前主機位址，避免連線失敗
+        const backendUrl = window.location.origin + '/api/check';
+        console.log('連線至:', backendUrl);
+
+        const response = await fetch(backendUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -624,15 +628,17 @@
           body: JSON.stringify(payload),
         });
 
-        if (!response.ok) throw new Error('伺服器回應錯誤');
+        if (!response.ok) {
+          const errorDetail = await response.text();
+          throw new Error(`伺服器回應錯誤 (${response.status}): ${errorDetail}`);
+        }
         
         const result = await response.json();
-        console.log('後端檢核結果:', result);
         renderBackendCheckResult(result);
         
       } catch (error) {
         console.error('API Error:', error);
-        renderBackendCheckResult('無法連線至後端伺服器 (FastAPI)。請確認後端已啟動並開啟 CORS。');
+        renderBackendCheckResult(`檢核失敗：${error.message}。請確保你是透過 http://localhost:8000 開啟此網頁。`);
       }
     }
 
@@ -645,42 +651,64 @@
       }
 
       const labels = {
-        total: '畢業總學分',
+        total: '已修學分',
         total_ge: '通識總計',
-        c_c_e: '校訂選修',
-        c_req: '校訂必修',
-        d_c_e: '系選修',
+        c_req: '院共同必修',
         d_req: '系必修',
+        c_c_e: '院共同群修',
+        d_c_e: '系群修',
         ge_ch: '通識-中文',
         ge_fl: '通識-外語',
         ge_hum: '通識-人文',
-        ge_it: '通識-資訊',
-        ge_nat: '通識-自然',
-        ge_rc: '通識-宗教',
         ge_soc: '通識-社會',
-        pe: '體育次數'
+        ge_nat: '通識-自然',
+        ge_it: '通識-資訊',
+        ge_rc: '書院通識',
+        pe: '體育次數',
+        elec: '選修學分'
       };
 
-      let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">';
+      let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">';
       
       for (const [key, label] of Object.entries(labels)) {
         if (result[key] && Array.isArray(result[key])) {
-          const current = result[key][0];
-          const required = result[key][1];
-          const isOk = current >= required;
-          const percentage = required > 0 ? Math.min((current / required) * 100, 100) : 0;
-          const color = isOk ? 'var(--ok)' : 'var(--danger)';
+          const [current, threshold, diff, isOk] = result[key];
+          const percentage = threshold > 0 ? Math.min((current / threshold) * 100, 100) : 0;
+          
+          let color = 'var(--blue)';
+          let statusText = '';
+          let thresholdLabel = '門檻';
+
+          if (isOk === null) {
+            if (key === 'elec') {
+              thresholdLabel = '無門檻';
+              statusText = '<span style="color: var(--muted); font-size: 11px;">自主選修</span>';
+            } else if (key.startsWith('ge_')) {
+              thresholdLabel = '上限';
+              color = 'var(--blue)';
+              statusText = `<span style="color: var(--blue-dark); font-weight: 700; font-size: 11px;">尚可修 ${diff}</span>`;
+            }
+          } else {
+            color = isOk ? 'var(--ok)' : 'var(--danger)';
+            statusText = isOk ? 
+              '<span style="color: var(--ok); font-weight: 700; font-size: 11px;">已達成</span>' : 
+              `<span style="color: var(--danger); font-weight: 700; font-size: 11px;">還差 ${diff}</span>`;
+          }
 
           html += `
-            <div style="background: #fff; padding: 12px; border: 1px solid var(--line); border-radius: 6px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <span style="font-weight: 700; font-size: 14px;">${label}</span>
-                <span style="color: ${color}; font-weight: 700; font-size: 14px;">
-                  ${current} / ${required} ${isOk ? '✅' : '❌'}
-                </span>
+            <div style="background: #fff; padding: 10px; border: 1px solid ${(isOk === true) ? 'rgba(31, 122, 61, 0.2)' : 'var(--line)'}; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.05);">
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 6px;">
+                <div>
+                  <div style="font-weight: 700; font-size: 13px; color: var(--blue-dark);">${label}</div>
+                  <div style="font-size: 10px; color: var(--muted); margin-top: 2px;">${thresholdLabel}：${(key === 'elec') ? '—' : threshold}</div>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-size: 15px; font-weight: 800; color: ${color};">${current} ${ (key !== 'elec') ? `<span style="font-size: 10px; font-weight: 400; color: var(--ink);">/ ${threshold}</span>` : ''}</div>
+                  <div style="font-size: 11px; margin-top: 1px;">${statusText}</div>
+                </div>
               </div>
-              <div style="width: 100%; height: 6px; background: #f1f1f1; border-radius: 3px; overflow: hidden;">
-                <div style="width: ${percentage}%; height: 100%; background: ${color}; transition: width 0.6s ease;"></div>
+              <div style="width: 100%; height: 5px; background: #f1f1f1; border-radius: 3px; overflow: hidden;">
+                <div style="width: ${percentage}%; height: 100%; background: ${color}; transition: width 0.8s ease;"></div>
               </div>
             </div>`;
         }

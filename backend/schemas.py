@@ -12,6 +12,7 @@ class Request(BaseModel):
 class Response(BaseModel):
     total:      List[int]
     total_ge:   List[int]
+    elec:       List[int]
     c_c_e:      List[int]
     c_req:      List[int]
     d_c_e:      List[int]

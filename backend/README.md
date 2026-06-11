@@ -18,7 +18,7 @@
 安裝 Python 相依套件
 
 ```bash
-pip install fastapi uvicorn sqlalchemy pymysql pydantic
+pip install fastapi uvicorn sqlalchemy pymysql pydantic dotenv
 ```
 
 啟動後端
